@@ -1,0 +1,23 @@
+args	"-F sun -c g.c -H g.h -uCITY --func-name ggo --show-required --default-optional --no-help --no-version -G"
+
+package "sun"
+version "1.0.0"
+
+description	"Compute sunrise and sunset times for each CITY.\nIf no CITY is given, read the SUN_HOME_CITY environment variable."
+
+section "Input options"
+option	"date" d "Compute for date DATE" string typestr="DATE"
+option	"elevation" e "Compute using elevation ELEVATION (meters)" double typestr="ELEVATION"
+option	"lattitude" l "Compute with lattitude LATTITUDE" string typestr="LATTITUDE"
+option	"longitude" L "Compute with longitude LONGITUDE" string typestr="LONGITUDE"
+section "Output options"
+option	"astronomical"  a "Compute astronomical dawn and dusk (18 degrees)"
+option	"civil"  c "Compute civil dawn and dusk (6 degrees)"
+option	"nautical"  n "Compute nautical dawn and dusk (12 degrees)"
+option	"utc" u "Compute in UTC instead of the user timezone"
+section	"Getting help"
+option	"help" h "Print this help message and exit"
+option	"version" v "Print version information and exit"
+text	"\nTry 'man sun' for more information."
+
+versiontext	"Copyright (C) 2026 Jack Renton Uteg.\nLicense GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.\n\nWritten by Jack R. Uteg."
