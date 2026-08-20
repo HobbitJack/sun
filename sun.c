@@ -1,8 +1,10 @@
 #define _POSIX_C_SOURCE 200809L
+#define _XOPEN_SOURCE 700
 
 #include <ctype.h>
 #include <errno.h>
 #include <libgen.h>
+#include <locale.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,29 +31,20 @@
                                    	VAL += MODULUS;        \
                                 }
 
-#define PARSE_CITY_STR(CITY) {                                                                         \
-				parse_city(CITY, &city);                                                \
-				if (city == NULL)                                                      \
-				{                                                                      \
-					fprintf(stderr, "%s: %s: Not in database\n", progname, CITY);  \
-					exit(1);                                                       \
-				}                                                                      \
+#define PARSE_CITY_STR(CITY) {                            \
+				parse_city(CITY, &city);  \
+				if (city == NULL)         \
+					errno = 1;        \
 			     }
 
-#define TOKEN_CITY_STR(CITY) {                                                                         \
-				name = strtok(CITY, "\t");                                             \
-				lattitude = strtod(strtok(NULL, "\t"), &buf);                          \
-				if (*buf != '\0' || errno)                                             \
-				{                                                                      \
-					fprintf(stderr, "%s: %s: Could not parse\n", progname, name);  \
-					exit(1);                                                       \
-				}                                                                      \
-				longitude = strtod(strtok(NULL, "\t\n"), &buf);                        \
-				if (*buf != '\0' || errno)                                             \
-				{                                                                      \
-					fprintf(stderr, "%s: %s: Could not parse\n", progname, name);  \
-					exit(1);                                                       \
-				}                                                                      \
+#define TOKEN_CITY_STR(CITY) {                                                   \
+				name = strtok(CITY, "\t");                       \
+				lattitude = strtod(strtok(NULL, "\t"), &buf);    \
+				if (*buf != '\0')                                \
+                                	errno = 1;                               \
+				longitude = strtod(strtok(NULL, "\t\n"), &buf);  \
+				if (*buf != '\0')                                \
+                                	errno = 1;                               \
                              }
 
 
@@ -63,9 +56,33 @@ static struct gengetopt_args_info args;
 time_t
 parse_date(char *str)
 {
+	struct tm t = { 0 };
+	char *end;
 	time_t date;
 
-	return time(NULL);
+	date = time(NULL);
+	if (args.utc_given)
+		gmtime_r(&date, &t);
+	else
+		localtime_r(&date, &t);
+
+	if ((end = strptime(str, "%x", &t)) && (*end == '\0'))
+		return mktime(&t);
+	else if ((end = strptime(str, "%Ex", &t)) && (*end == '\0'))
+		return mktime(&t);
+	else if ((end = strptime(str, "%Y-%m-%d", &t)) && (*end == '\0'))
+		return mktime(&t);
+	else if ((end = strptime(str, "%Y/%m/%d", &t)) && (*end == '\0'))
+		return mktime(&t);
+	else if ((end = strptime(str, "%Y %m %d", &t)) && (*end == '\0'))
+		return mktime(&t);
+	else if ((end = strptime(str, "%b %d %y", &t)) && (*end == '\0'))
+		return mktime(&t);
+	else if ((end = strptime(str, "%b %d", &t)) && (*end == '\0'))
+		return mktime(&t);
+	
+	fprintf(stderr, "%s: %s: Could not unambiguously parse date string\n", progname, str);
+	exit(1);
 }
 
 double
@@ -137,7 +154,7 @@ posix2jd(time_t ts)
 }
 
 time_t*
-compute_times(double lattitude, double longitude, double elevation, time_t date)
+compute_times(double lattitude, double longitude, double elevation, time_t date, int sunangle)
 {
 	time_t *times = malloc(2 * sizeof(time_t));
 	double n, J, M, C, l, T, D, cosH;
@@ -163,7 +180,7 @@ compute_times(double lattitude, double longitude, double elevation, time_t date)
 	D = asin(sin(l * RAD) * sin(23.4397 * RAD)) * DEG;
 	
 	//cosine of hour angle
-	cosH = (sin(-RAD * (0.833 + 2.076*sqrt(elevation)/60)) - (sin(lattitude * RAD) * sin(D * RAD)))/(cos(lattitude * RAD) * cos(D * RAD));
+	cosH = (sin(-RAD * (0.833 + sunangle + copysign(1.76, elevation)*sqrt(fabs(elevation))/60)) - (sin(lattitude * RAD) * sin(D * RAD)))/(cos(lattitude * RAD) * cos(D * RAD));
 	
 	if (abs(cosH) > 1)
 		return NULL;
@@ -184,7 +201,7 @@ print_times(time_t *times)
 	
 	if (times == NULL)
 	{
-		printf("No sunset or sunrise\n", progname);
+		printf("No sunset or sunrise\n");
 		return;
 	}
 
@@ -219,6 +236,7 @@ int
 main(int argc, char *argv[])
 {
 	int i;
+	int sunangle;
 	double lattitude, longitude, elevation;
 	char *name;
 	char *city;
@@ -226,7 +244,10 @@ main(int argc, char *argv[])
 	time_t *times;
 	time_t date;
 
+	setlocale(LC_ALL, "");
+
 	progname = basename(argv[0]);
+	status = 1;
 
 	if (ggo(argc, argv, &args))
 		return 1;
@@ -248,18 +269,38 @@ main(int argc, char *argv[])
 	else
 		date = time(NULL);
 
+	if (args.civil_given)
+		sunangle = 6;
+	if (args.nautical_given)
+		sunangle = 12;
+	if (args.astronomical_given)
+		sunangle = 18;
+
 	if (args.inputs_num)
 	{
 		for (i=0; i<args.inputs_num; i++)
 		{
 			PARSE_CITY_STR(args.inputs[i])
+			if (errno)
+			{
+				fprintf(stderr, "%s: %s: Not in database\n", progname, args.inputs[i]);
+				status = 1;
+				continue;
+			}
+				
 			TOKEN_CITY_STR(city)
+			if (errno)
+			{
+				fprintf(stderr, "%s: %s: Could not parse\n", progname, args.inputs[i]);
+				status = 1;
+				continue;
+			}
 
-			times = compute_times(lattitude, longitude, 0, date);
+			times = compute_times(lattitude, longitude, args.elevation_given ? args.elevation_arg : 0, date, sunangle);
 			print_times_city(name, times);
 		}
 
-		return 0;
+		return status;
 	}
 
 	if (args.lattitude_given && args.longitude_given)
@@ -274,17 +315,28 @@ main(int argc, char *argv[])
 	}
 	else
 	{
-		if ((city = getenv("SUN_HOME_CITY")) == NULL)
+		if (getenv("SUN_HOME_CITY") == NULL)
 		{
 			fprintf(stderr, "%s: Missing operand\n", progname);
 			return 1;
 		}
 
 		PARSE_CITY_STR(getenv("SUN_HOME_CITY"))
+		if (errno)
+		{
+			fprintf(stderr, "%s: %s: Not in database\n", progname, getenv("SUN_HOME_CITY"));
+			return 1;
+		}
+				
 		TOKEN_CITY_STR(city)
+		if (errno)
+		{
+			fprintf(stderr, "%s: %s: Could not parse\n", progname, getenv("SUN_HOME_CITY"));
+			return 1;
+		}
 	}
 
-	times = compute_times(lattitude, longitude, args.elevation_given ? args.elevation_arg : 0, date);
+	times = compute_times(lattitude, longitude, args.elevation_given ? args.elevation_arg : 0, date, sunangle);
 	print_times(times);
-	return 0;
+	return status;
 }

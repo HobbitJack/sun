@@ -1,0 +1,92 @@
+.TH SUN "1" "August 2026" "sun 1.0.0" "User Commands"
+.SH NAME
+sun \- compute sunrise and sunset times
+.SH SYNOPSIS
+.B sun
+[\fI\,OPTION\/\fR]... [\fI\,CITY\/\fR]...
+.br
+.B sun
+[\fI\,OPTION\/\fR]... \fB\-l\fR \fI\,LATTITUDE\fR \fB\-L\fR \fI\,LONGITUDE\fR
+.SH DESCRIPTION
+.B sun
+computes the time of sunrise and sunset, or twilight (i.e. dawn/dusk) for each \fICITY\fR specified, or for a single set of coordinates on Earth's surface.
+Sunrise and sunset are defined when the top of the disk of the Sun first appears above, or finally disappears below, the horizon.
+Coordinates may be specified manually in degrees lattitude north and degrees longitude east, or by looking up the name of a city from an included database of cities.
+.LP
+Times are always output in the current time zone (regardless of the timezeone of \fICITY\fRs specified), unless the
+.B \-u
+flag is given, in which case they are output in UTC/GMT.
+.LP
+N.B. Due to impossible-to-prefigure atmospheric behavior, the actual sunrise and sunset (and twilight) times will vary from the ones computed here by up to 2-3 minutes.
+If you have religious obligations that depend on strongly on the behavior of the physical Sun, use this program only as a guide for approximately when these will occur in your area.
+.LP
+If a
+.I CITY
+is given, the
+.B -l
+and
+.B -L
+options are ignored.
+.br
+If no
+.I CITY
+is given and no coordinates are given, read the
+.I SUN_HOME_CITY
+environment variable, and compute using the coordinates specified in the data file.
+If
+.I SUN_HOME_CITY
+is not set, an error message will be given.
+.SH OPTIONS
+Mandatory options to long options are mandatory for short options too.
+.SS "INPUT OPTIONS"
+.TP
+\fB\-d\fR, \fB\-\-date\fR=\fI\,DATE\/\fR
+Parse \fIDATE\fR as a valid date in the current locale's specified date format(s), or in ISO-8601 format, and perform calculation for the given date.
+Unless \fB\-u\fR is given, the date will be assumed to be for the current timezone, which should be kept in mind when interpreting results across timezones.
+.TP
+\fB\-e\fR, \fB\-\-elevation\fR=\fI\,ELEVATION\/\fR
+Use \fIELEVATION\fR as an elevation in meters, over the horizon.
+This is \fIonly\fR necessary if the horizon is at a different altitude than the observer, and this measures in altitude over (or under) the horizon.
+.TP
+\fB\-l\fR, \fB\-\-lattitude\fR=\fI\,LATTITUDE\/\fR
+Compute with lattitude \fILATTITUDE\fR, in positive degrees north.
+.I LATTITUDE
+may be given in decimal degrees, or in sexigesimal, separated by ':' or by whitespace.
+.TP
+\fB\-L\fR, \fB\-\-longitude\fR=\fI\,LONGITUDE\/\fR
+Compute with longitude \fILONGITUDE\fR, in positive degrees east.
+.I LONGITUDE
+may be given in decimal degrees, or in sexigesimal degrees, separated by ':' or by whitespace.
+.I LONGITUDE
+should not be given in sexigesimal hours. 
+.SS "OUTPUT OPTIONS"
+.TP
+\fB\-a\fR, \fB\-\-astronomical\fR
+Compute astronomical dawn and dusk, which is when the center of the Sun is 18 degrees below the horizon.
+Astronomical twilight is the point where point sources (i.e. stars) may be observed by eye in the sky, less any light pollution.
+.TP
+\fB\-c\fR, \fB\-\-civil\fR
+Compute civil dawn and dusk, when the center of the Sun is 6 degrees below the horizon.
+Civil twilight is typically the point where artifical lighting is necessary to continue outdoor activity with good vision and ability to discern objects.
+.TP
+\fB\-n\fR, \fB\-\-nautical\fR
+Compute nautical dawn and dusk, when the center of the Sun is 12 degrees below the horizon.
+Nautical twilight is the level of lighting where it is no longer possible for the eye to discern between the horizon and the sky, which is significant for navigation, especially on the sea.
+.TP
+\fB\-u\fR, \fB\-\-utc\fR
+Times are outputted assuming GMT/UTC, instead of the currently-specifed timezone (i.e. the \fITZ\fR environment variable or something like your system's \fI/etc/localtime\fR).
+.SS "GETTING HELP"
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Print a short help message and exit.
+.TP
+\fB\-v\fR, \fB\-\-version\fR
+Print version information and exit.
+.SH AUTHOR
+Written by Jack R. Uteg.
+.SH COPYRIGHT
+Copyright \(co 2026 Jack Renton Uteg.
+License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.

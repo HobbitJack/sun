@@ -7,7 +7,7 @@ DATADIR := $(PREFIX)/share/sun
 
 CFLAGS += -DDATADIR=$(DATADIR)
 
-all:	sun
+all:	sun cities.dat
 
 sun:	sun.c sun.g.h sun.g.h
 	c99 -pedantic -lm -o $@ sun.c sun.g.c sun.g.h
@@ -18,7 +18,7 @@ sun.g.c sun.g.h:	sun.g
 	mv -f sun.g.c.tmp sun.g.c
 
 cities.dat:	worldcities.csv
-	sed 's/","/\t/g' <worldcities.csv | tail -n+1 | tr -d '"' | cut -f1,2,3,4,10 | sort -hk5 -rt'    ' | cut -f2,3,4 > cities.dat
+	sed 's/","/\t/g' <worldcities.csv | tail -n+1 | tr -d '"' | cut -f1,2,3,4,10 | sort -hk5 -rt'	' | cut -f2,3,4 > cities.dat
 
 clean:
 	rm -f sun sun.g.? sun*.tar.gz sun.1.gz Makefile cities.dat
