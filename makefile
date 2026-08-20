@@ -34,7 +34,7 @@ release:	sun
 	tar -cf sun.tar sun sun.1 cities.dat Makefile
 	gzip sun.tar
 
-install:	sun 
+install:	sun cities.dat
 	mkdir -p $(PREFIX)/bin/
 	install sun $(PREFIX)/bin/
 	gzip -k sun.1
