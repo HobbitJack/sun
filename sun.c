@@ -247,7 +247,7 @@ main(int argc, char *argv[])
 	setlocale(LC_ALL, "");
 
 	progname = basename(argv[0]);
-	status = 1;
+	status = 0;
 
 	if (ggo(argc, argv, &args))
 		return 1;
@@ -338,5 +338,5 @@ main(int argc, char *argv[])
 
 	times = compute_times(lattitude, longitude, args.elevation_given ? args.elevation_arg : 0, date, sunangle);
 	print_times(times);
-	return status;
+	return 0;
 }
