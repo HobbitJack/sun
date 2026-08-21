@@ -18,15 +18,17 @@ Times are always output in the current time zone (regardless of the timezeone of
 flag is given, in which case they are output in UTC/GMT.
 .LP
 N.B. Due to impossible-to-prefigure atmospheric behavior, the actual sunrise and sunset (and twilight) times will vary from the ones computed here by up to 2-3 minutes.
-If you have religious obligations that depend on strongly on the behavior of the physical Sun, use this program only as a guide for approximately when these will occur in your area.
+If religious obligations depend on strongly on the exact timing of the physical twilight or sunrise/sunset, use this program only as a guide for approximately when these will occur in your area.
 .LP
-If a
-.I CITY
-is given, the
+If any \fICITY\fRs are given, the
 .B -l
 and
 .B -L
 options are ignored.
+.br
+If
+.I CITY
+is '-', read \fICITY\fRs from standard input.
 .br
 If no
 .I CITY

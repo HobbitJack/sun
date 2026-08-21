@@ -13,6 +13,7 @@
 #include <time.h>
 
 #include "sun.g.h"
+#include "sun.l.h"
 
 #ifndef DATADIR
 #define DATADIR "/usr/local/share/sun/"
@@ -254,16 +255,46 @@ print_times_city(char *city, time_t *times)
 }
 
 int
+compute_and_print_city(char *inp, time_t date, int sunangle)
+{
+	char *city;
+	char *buf;
+
+	char *name;
+	double lattitude, longitude;
+	time_t *times;
+		
+	city = NULL;
+	errno = 0;
+
+	PARSE_CITY_STR(inp)
+	if (errno)
+	{
+		fprintf(stderr, "%s: %s: Not in database\n", progname, inp);
+		return 1;
+	}
+	errno = 0;
+
+	TOKEN_CITY_STR(city)
+	if (errno)
+	{
+		fprintf(stderr, "%s: %s: Could not parse\n", progname, inp);
+		return 1;
+	}
+
+	times = compute_times(lattitude, longitude, args.elevation_given ? args.elevation_arg : 0, date, sunangle);
+	print_times_city(name, times);
+}
+
+int
 main(int argc, char *argv[])
 {
 	int i;
 	int sunangle;
-	double lattitude, longitude, elevation;
-	char *name;
-	char *city;
-	char *buf;
-	time_t *times;
 	time_t date;
+
+	double lattitude, longitude, elevation;
+	time_t *times;
 
 	setlocale(LC_ALL, "");
 
@@ -300,31 +331,16 @@ main(int argc, char *argv[])
 	if (args.inputs_num)
 	{
 		if (args.table_given) print_table_city();
-		for (i=0; i<args.inputs_num; i++)
-		{
-			city = NULL;
-			errno = 0;
-			
-			PARSE_CITY_STR(args.inputs[i])
-			if (errno)
-			{
-				fprintf(stderr, "%s: %s: Not in database\n", progname, args.inputs[i]);
-				status = 1;
-				continue;
-			}
-			errno = 0;
-				
-			TOKEN_CITY_STR(city)
-			if (errno)
-			{
-				fprintf(stderr, "%s: %s: Could not parse\n", progname, args.inputs[i]);
-				status = 1;
-				continue;
-			}
-			errno = 0;		
 
-			times = compute_times(lattitude, longitude, args.elevation_given ? args.elevation_arg : 0, date, sunangle);
-			print_times_city(name, times);
+		if (strcmp(args.inputs[0], "-"))
+		{
+			for (i=0; i<args.inputs_num; i++)
+				status |= compute_and_print_city(args.inputs[i], date, sunangle);
+		}
+		else
+		{
+			while (yylex() != -1)
+				status |= compute_and_print_city(yytext, date, sunangle);
 		}
 
 		return status;
@@ -334,42 +350,25 @@ main(int argc, char *argv[])
 	{
 		lattitude = parse_seg(args.lattitude_arg);
 		longitude = parse_seg(args.longitude_arg);
+
+		times = compute_times(lattitude, longitude, args.elevation_given ? args.elevation_arg : 0, date, sunangle);
+		if (args.table_given) print_table();
+		print_times(times);
 	}
 	else if (args.lattitude_given || args.longitude_given)
 	{
 		fprintf(stderr, "%s: Lattitude and longitude must be given together\n", progname);
 		return 1;
 	}
+	else if (getenv("SUN_HOME_CITY") == NULL)
+	{
+		fprintf(stderr, "%s: Missing operand\n", progname);
+		return 1;
+	}
 	else
 	{
-		if (getenv("SUN_HOME_CITY") == NULL)
-		{
-			fprintf(stderr, "%s: Missing operand\n", progname);
-			return 1;
-		}
-
-		city = NULL;
-		errno = 0;
-
-		PARSE_CITY_STR(getenv("SUN_HOME_CITY"))
-		if (errno)
-		{
-			fprintf(stderr, "%s: %s: Not in database\n", progname, getenv("SUN_HOME_CITY"));
-			return 1;
-		}
-		errno = 0;
-				
-		TOKEN_CITY_STR(city)
-		if (errno)
-		{
-			fprintf(stderr, "%s: %s: Could not parse\n", progname, getenv("SUN_HOME_CITY"));
-			return 1;
-		}
-		errno = 0;
+		return compute_and_print_city(getenv("SUN_HOME_CITY"), date, sunangle);
 	}
-
-	times = compute_times(lattitude, longitude, args.elevation_given ? args.elevation_arg : 0, date, sunangle);
-	if (args.table_given) print_table();
-	print_times(times);
-	return 0;
+	
+	return 1;
 }

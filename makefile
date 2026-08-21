@@ -9,28 +9,31 @@ CFLAGS += -DDATADIR=$(DATADIR)
 
 all:	sun cities.dat
 
-sun:	sun.c sun.g.h sun.g.h
-	c99 -pedantic -lm -o $@ sun.c sun.g.c sun.g.h
+sun:	sun.c sun.g.h sun.g.h sun.l.h sun.l.c
+	c99 -pedantic -lm -o $@ sun.c sun.g.c sun.l.c
 
 sun.g.c sun.g.h:	sun.g
 	gengetopt <sun.g
 	sed -E 's/(\\n)?[[:blank:]]+\(default=.*\)//' <sun.g.c >sun.g.c.tmp
 	mv -f sun.g.c.tmp sun.g.c
 
+sun.l.c sun.l.h:	sun.l
+	 lex -D_POSIX_C_SOURCE=200809L -o sun.l.c sun.l
+
 cities.dat:	worldcities.csv
 	sed 's/","/\t/g' <worldcities.csv | tail -n+4 | tr -d '"' | cut -f1,2,3,4,10 | sort -hk5 -rt'	' | cut -f2,3,4 > cities.dat
 
 clean:
-	rm -f sun sun.g.? sun*.tar.gz sun.1.gz Makefile cities.dat
+	rm -f sun sun.g.? sun.l.? sun*.tar.gz sun.1.gz Makefile cities.dat
 
 source:
 	rm -f sun_source.tar.gz
-	tar -cf sun_source.tar sun.c sun.g sun.1 worldcities.csv
+	tar -cf sun_source.tar sun.? worldcities.csv
 	gzip sun_source.tar
 
 release:	sun
 	rm -f sun.tar.gz
-	sed 7,36d makefile | sed '2c .PHONY:	install uninstall'> Makefile
+	sed 7,39d makefile | sed '2c .PHONY:	install uninstall'> Makefile
 	tar -cf sun.tar sun sun.1 cities.dat Makefile
 	gzip sun.tar
 
