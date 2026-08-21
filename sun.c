@@ -98,9 +98,11 @@ parse_city(char *city, char **out)
 	ssize_t r;
 
 	fp = fopen(DATADIR "cities.dat", "r");
-	if (fp == NULL)
+	if (errno)
 	{
-		fprintf(stderr, "%s: %s: No such file, or file not readable\n", progname, DATADIR "cities.dat");
+		buf1 = malloc(sizeof(char) * ERRBUF_S(DATADIR "cities.dat"));
+		snprintf(buf1, ERRBUF_S(DATADIR "cities.dat"), "%s: %s", progname, DATADIR "cities.dat");
+		perror(buf1);
 		exit(1);
 	}
 
