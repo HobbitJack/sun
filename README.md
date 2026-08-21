@@ -50,14 +50,14 @@ Following proper installation, documentation may be read with `man sun`.
 
 ## LICENSE
 sun Copyright (C) 2026 Jack Renton Uteg.
-License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.
+License GPLv3+: GNU GPL version 3 or later <<https://gnu.org/licenses/gpl.html>>.
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
 
 Written by Jack R. Uteg.
 
 Cities database Copyright (C) 2026 simplemaps.com, at
-<https://simplemaps.com/data/world-cities>.
-License CC-BY-4.0: Creative Commons Attribution 4.0 Internation
-<https://creativecommons.org/licenses/by/4.0/>
+<<https://simplemaps.com/data/world-cities>>.
+License CC-BY-4.0: Creative Commons Attribution 4.0 International
+<<https://creativecommons.org/licenses/by/4.0/>>
 Modified from the original in a manner not endorsed by simplemaps.com.
