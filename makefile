@@ -3,7 +3,7 @@
 .SUFFIXES:
 
 PREFIX 	?= /usr/local
-DATADIR := $(PREFIX)/share/sun
+DATADIR ?= $(PREFIX)/share/sun
 
 CFLAGS += -DDATADIR=$(DATADIR)
 
