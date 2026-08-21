@@ -81,6 +81,11 @@ This effectively outputs a TSV.
 .TP
 \fB\-u\fR, \fB\-\-utc\fR
 Times are outputted assuming GMT/UTC, instead of the currently-specifed timezone (i.e. the \fITZ\fR environment variable or something like your system's \fI/etc/localtime\fR).
+.TP
+\fB\-z\fR, \fB\-\-loose-exit-status\fR
+Change the behavior of the exit status.
+Normally, the program will exit non-zero if any invalid input is provided.
+This flag will change the behavior such that the program will only exit non-zero if a fatal error is encountered.
 .SS "GETTING HELP"
 .TP
 \fB\-h\fR, \fB\-\-help\fR

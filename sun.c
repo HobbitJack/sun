@@ -32,22 +32,6 @@
                                    	VAL += MODULUS;        \
                                 }
 
-#define PARSE_CITY_STR(CITY) {                            \
-				parse_city(CITY, &city);  \
-				if (city == NULL)         \
-					errno = 1;        \
-			     }
-
-#define TOKEN_CITY_STR(CITY) {                                                   \
-				name = strtok(CITY, "\t");                       \
-				lattitude = strtod(strtok(NULL, "\t"), &buf);    \
-				if (*buf != '\0')                                \
-                                	errno = 1;                               \
-				longitude = strtod(strtok(NULL, "\t\n"), &buf);  \
-				if (*buf != '\0')                                \
-                                	errno = 1;                               \
-                             }
-
 
 static char *progname;
 static int status;
@@ -267,16 +251,23 @@ compute_and_print_city(char *inp, time_t date, int sunangle)
 	city = NULL;
 	errno = 0;
 
-	PARSE_CITY_STR(inp)
-	if (errno)
+	parse_city(inp, &city);
+	if (city == NULL)
 	{
 		fprintf(stderr, "%s: %s: Not in database\n", progname, inp);
 		return 1;
 	}
-	errno = 0;
 
-	TOKEN_CITY_STR(city)
-	if (errno)
+	name = strtok(city, "\t");
+	lattitude = strtod(strtok(NULL, "\t"), &buf);
+	if (*buf != '\0')
+	{
+		fprintf(stderr, "%s: %s: Could not parse\n", progname, inp);
+		return 1;
+	}
+
+	longitude = strtod(strtok(NULL, "\t\n"), &buf);
+	if (*buf != '\0')
 	{
 		fprintf(stderr, "%s: %s: Could not parse\n", progname, inp);
 		return 1;
@@ -284,6 +275,7 @@ compute_and_print_city(char *inp, time_t date, int sunangle)
 
 	times = compute_times(lattitude, longitude, args.elevation_given ? args.elevation_arg : 0, date, sunangle);
 	print_times_city(name, times);
+	return 0;
 }
 
 int
@@ -343,7 +335,7 @@ main(int argc, char *argv[])
 				status |= compute_and_print_city(yytext, date, sunangle);
 		}
 
-		return status;
+		return args.loose_exit_status_given ? 0 : status;
 	}
 
 	if (args.lattitude_given && args.longitude_given)
@@ -367,7 +359,7 @@ main(int argc, char *argv[])
 	}
 	else
 	{
-		return compute_and_print_city(getenv("SUN_HOME_CITY"), date, sunangle);
+		return args.loose_exit_status_given ? 0 : compute_and_print_city(getenv("SUN_HOME_CITY"), date, sunangle);
 	}
 	
 	return 1;
