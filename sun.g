@@ -7,7 +7,7 @@ description	"Compute sunrise and sunset times for each CITY.\nIf CITY is '-', re
 
 section "Input options"
 option	"date" d "Compute for date DATE" string typestr="DATE"
-option	"elevation" e "Compute using elevation ELEVATION (meters)" double typestr="ELEVATION"
+option	"elevation" e "Compute using elevation ELEVATION (meters)" long double typestr="ELEVATION"
 option	"lattitude" l "Compute with lattitude LATTITUDE" string typestr="LATTITUDE"
 option	"longitude" L "Compute with longitude LONGITUDE" string typestr="LONGITUDE"
 section "Output options"

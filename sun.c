@@ -27,7 +27,7 @@
 #define BUFSIZE 64
 
 #define MOD(VAL, EXPR, MODULUS) {                              \
-                                   VAL = fmod(EXPR, MODULUS);  \
+                                   VAL = fmodl(EXPR, MODULUS);  \
                                    if (VAL < 0)                \
                                    	VAL += MODULUS;        \
                                 }
@@ -70,17 +70,17 @@ parse_date(char *str)
 	exit(1);
 }
 
-double
+long double
 parse_seg(char *seg)
 {
 	int h, m;
-	double s;
+	long double s;
 	
-	if (sscanf(seg, "%d:%d:%lf", &h, &m, &s) == 3)
-		return (abs(h) + abs(m/60) + abs(s/3600)) * copysign(1, h);
-	else if (sscanf(seg, "%d.%d.%lf", &h, &m, &s) == 3)
-		return (abs(h) + abs(m/60) + abs(s/3600)) * copysign(1, h);
-	else if (sscanf(seg, "%lf", &s) == 1)
+	if (sscanf(seg, "%d:%d:%Lf", &h, &m, &s) == 3)
+		return (abs(h) + fabsl(m/60) + fabsl(s/3600)) * copysignl(1, h);
+	else if (sscanf(seg, "%d.%d.%Lf", &h, &m, &s) == 3)
+		return (abs(h) + fabsl(m/60) + fabsl(s/3600)) * copysignl(1, h);
+	else if (sscanf(seg, "%Lf", &s) == 1)
 		return s;
 
 	fprintf(stderr, "%s: %s: Invalid sexigesimal literal\n", progname, seg);
@@ -129,24 +129,24 @@ parse_city(char *city, char **out)
 }
 
 time_t
-jd2posix(double jd)
+jd2posix(long double jd)
 {
 	return (time_t)trunc((jd - 2440587.5) * 86400);
 }
 
-double
+long double
 posix2jd(time_t ts)
 {
 	return ts/86400.0 + 2440587.5;
 }
 
 time_t*
-compute_times(double lattitude, double longitude, double elevation, time_t date, int sunangle)
+compute_times(long double lattitude, long double longitude, long double elevation, time_t date, int sunangle)
 {
 	time_t *times = malloc(2 * sizeof(time_t));
-	double n, J, M, C, l, T, D, cosH;
+	long double n, J, M, C, l, T, D, cosH;
 
-	n = ceil(posix2jd(date) - 2451545 + 0.0008);
+	n = ceill(posix2jd(date) - 2451545 + 0.0008);
 
 	//mean solar time
 	J = n - longitude/360;
@@ -155,25 +155,25 @@ compute_times(double lattitude, double longitude, double elevation, time_t date,
 	MOD(M, 357.5291 + 0.98560028 * J, 360)
 
 	//equation of the center
-	C = 1.9148 * sin(M*RAD) + 0.02 * sin(2 * M * RAD) + 0.0003 * sin(3 * M * RAD);
+	C = 1.9148 * sinl(M*RAD) + 0.02 * sinl(2 * M * RAD) + 0.0003 * sinl(3 * M * RAD);
 
 	//ecliptic longitude
 	MOD(l, M + C + 180 + 102.9372, 360)
 
 	//solar noon
-	T = 2451545 + J + 0.0053*sin(M * RAD) - 0.0069*sin(2 * l * RAD);
+	T = 2451545 + J + 0.0053*sinl(M * RAD) - 0.0069*sinl(2 * l * RAD);
 
 	//declination
-	D = asin(sin(l * RAD) * sin(23.4397 * RAD)) * DEG;
+	D = asinl(sinl(l * RAD) * sinl(23.4397 * RAD)) * DEG;
 	
 	//cosine of hour angle
-	cosH = (sin(-RAD * (0.833 + sunangle + copysign(1.76, elevation)*sqrt(fabs(elevation))/60)) - (sin(lattitude * RAD) * sin(D * RAD)))/(cos(lattitude * RAD) * cos(D * RAD));
+	cosH = (sinl(-RAD * (0.833 + sunangle + copysignl(1.76, elevation)*sqrtl(fabsl(elevation))/60)) - (sinl(lattitude * RAD) * sin(D * RAD)))/(cosl(lattitude * RAD) * cosl(D * RAD));
 	
 	if (abs(cosH) > 1)
 		return NULL;
 
-	times[0] = jd2posix(T - acos(cosH)*DEG/360);
-	times[1] = jd2posix(T + acos(cosH)*DEG/360);
+	times[0] = jd2posix(T - acosl(cosH)*DEG/360);
+	times[1] = jd2posix(T + acosl(cosH)*DEG/360);
 	
 	return times;
 }
@@ -241,13 +241,13 @@ print_times_city(char *city, time_t *times)
 }
 
 int
-compute_and_print_city(char *inp, time_t date, double sunangle)
+compute_and_print_city(char *inp, time_t date, long double sunangle)
 {
 	char *city;
 	char *buf;
 
 	char *name;
-	double lattitude, longitude;
+	long double lattitude, longitude;
 	time_t *times;
 		
 	city = NULL;
@@ -261,14 +261,14 @@ compute_and_print_city(char *inp, time_t date, double sunangle)
 	}
 
 	name = strtok(city, "\t");
-	lattitude = strtod(strtok(NULL, "\t"), &buf);
+	lattitude = strtold(strtok(NULL, "\t"), &buf);
 	if (*buf != '\0')
 	{
 		fprintf(stderr, "%s: %s: Could not parse\n", progname, inp);
 		return 1;
 	}
 
-	longitude = strtod(strtok(NULL, "\t\n"), &buf);
+	longitude = strtold(strtok(NULL, "\t\n"), &buf);
 	if (*buf != '\0')
 	{
 		fprintf(stderr, "%s: %s: Could not parse\n", progname, inp);
@@ -284,10 +284,10 @@ int
 main(int argc, char *argv[])
 {
 	int i;
-	double sunangle;
+	long double sunangle;
 	time_t date;
 
-	double lattitude, longitude, elevation;
+	long double lattitude, longitude, elevation;
 	time_t *times;
 
 	setlocale(LC_ALL, "");
