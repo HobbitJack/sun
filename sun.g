@@ -1,7 +1,7 @@
 args	"-F sun -c g.c -H g.h -uCITY --func-name ggo --show-required --default-optional --no-help --no-version -G"
 
 package "sun"
-version "1.3.1"
+version "1.3.2"
 
 description	"Compute sunrise and sunset times for each CITY.\nIf CITY is '-', read standard input.\nIf no CITY is given, read the SUN_HOME_CITY environment variable."
 

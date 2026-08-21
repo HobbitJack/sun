@@ -241,7 +241,7 @@ print_times_city(char *city, time_t *times)
 }
 
 int
-compute_and_print_city(char *inp, time_t date, int sunangle)
+compute_and_print_city(char *inp, time_t date, double sunangle)
 {
 	char *city;
 	char *buf;
@@ -284,7 +284,7 @@ int
 main(int argc, char *argv[])
 {
 	int i;
-	int sunangle;
+	double sunangle;
 	time_t date;
 
 	double lattitude, longitude, elevation;
@@ -316,11 +316,11 @@ main(int argc, char *argv[])
 		date = time(NULL);
 
 	if (args.civil_given)
-		sunangle = 6;
+		sunangle = 6 - 0.26667;
 	if (args.nautical_given)
-		sunangle = 12;
+		sunangle = 12 - 0.26667;
 	if (args.astronomical_given)
-		sunangle = 18;
+		sunangle = 18 - 0.26667;
 
 	if (args.inputs_num)
 	{
