@@ -20,4 +20,4 @@ option	"help" h "Print this help message and exit"
 option	"version" v "Print version information and exit"
 text	"\nTry 'man sun' for more information."
 
-versiontext	"Copyright (C) 2026 Jack Renton Uteg.\nLicense GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.\n\nWritten by Jack R. Uteg."
+versiontext	"Copyright (C) 2026 Jack Renton Uteg.\nLicense GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.\n\nWritten by Jack R. Uteg.\n\nCities database Copyright (C) 2026 simplemaps.com.\nLicense CC-BY-4.0: Creative Commons Attribution 4.0 Internation <https://creativecommons.org/licenses/by/4.0/>\nModified from the original in a manner not endorsed by simplemaps.com."

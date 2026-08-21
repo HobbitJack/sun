@@ -255,13 +255,13 @@ main(int argc, char *argv[])
 	if (args.help_given)
 	{
 		ggo_print_help();
-		return 1;
+		return 0;
 	}
 
 	if (args.version_given)
 	{
 		ggo_print_version();
-		return 1;
+		return 0;
 	}
 
 	if (args.date_given)
