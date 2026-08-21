@@ -1,6 +1,6 @@
 # SUN
 `sun` computes the sunrise and sunset times for points on Earth's surface, or for cities from a database stored as a Human-readable text file.
-The user may specify a city in a number of ways: cities may be given as arguments on the command line, given on standard input, or a default city read from the SUN_HOME_CITY environment variable.
+The user may specify a city in a number of ways: cities may be given as arguments on the command line, given on standard input, or a default city read from the `SUN_HOME_CITY` environment variable.
 
 In addition to sunrise and sunset, the times of civil, nautical, and astronomical twilight can also be computed, which can be useful for planning or religious purposes.
 
