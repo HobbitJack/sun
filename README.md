@@ -5,7 +5,7 @@ The user may specify a city in a number of ways: cities may be given as argument
 In addition to sunrise and sunset, the times of civil, nautical, and astronomical twilight can also be computed, which can be useful for planning or religious purposes.
 
 Accuracy is limited only by the un-forseeable atmospheric conditions, down to an error of about plus or minus 2 minutes.
-Due to different exact values used in the computation, this program may output values slightly different from those produced by other sources (i.e. national weather services); however,  
+Due to different exact values used in the computation, this program may output values slightly different from those produced by other sources (i.e. national weather services); however, these values should in general agree within a couple minutes.
 
 ## EXAMPLE USAGE
 ```sh
