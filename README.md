@@ -32,7 +32,7 @@ With appropriate permissions, install may be as simple as
 ```sh
 $ make
 $ make install
-``
+```
 
 which will install the program, the cities database, and documentation to the `/usr/local/` tree.
 In order to change installation location, the PREFIX and DATADIR variables may be set on the command line before running `make`.
