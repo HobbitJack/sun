@@ -1,7 +1,7 @@
 args	"-F sun -c g.c -H g.h -uCITY --func-name ggo --show-required --default-optional --no-help --no-version -G"
 
 package "sun"
-version "1.0.0"
+version "1.1.0"
 
 description	"Compute sunrise and sunset times for each CITY.\nIf no CITY is given, read the SUN_HOME_CITY environment variable."
 
@@ -14,6 +14,7 @@ section "Output options"
 option	"astronomical"  a "Compute astronomical dawn and dusk (18 degrees)"
 option	"civil"  c "Compute civil dawn and dusk (6 degrees)"
 option	"nautical"  n "Compute nautical dawn and dusk (12 degrees)"
+option	"table" t "Ensure strict TSV formatting and print headers"
 option	"utc" u "Compute in UTC instead of the user timezone"
 section	"Getting help"
 option	"help" h "Print this help message and exit"

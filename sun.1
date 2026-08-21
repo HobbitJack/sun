@@ -1,4 +1,4 @@
-.TH SUN "1" "August 2026" "sun 1.0.0" "User Commands"
+.TH SUN "1" "August 2026" "sun 1.1.0" "User Commands"
 .SH NAME
 sun \- compute sunrise and sunset times
 .SH SYNOPSIS
@@ -73,6 +73,10 @@ Civil twilight is typically the point where artifical lighting is necessary to c
 Compute nautical dawn and dusk, when the center of the Sun is 12 degrees below the horizon.
 Nautical twilight is the level of lighting where it is no longer possible for the eye to discern between the horizon and the sky, which is significant for navigation, especially on the sea.
 .TP
+\fB\-t\fR, \fB\-\-table\fR
+Output a tab-separate list of headers for each column, and output each computed sunrise and sunset separated from the respective city name by a tab.
+This effectively outputs a TSV.
+.TP
 \fB\-u\fR, \fB\-\-utc\fR
 Times are outputted assuming GMT/UTC, instead of the currently-specifed timezone (i.e. the \fITZ\fR environment variable or something like your system's \fI/etc/localtime\fR).
 .SS "GETTING HELP"
@@ -95,3 +99,5 @@ worldcities.csv Copyright \(co 2026 Simple Maps, at <https://simplemaps.com/data
 License CC-BY-4.0: Creative Commons Attribution 4.0 International <https://creativecommons.org/licenses/by/4.0/>.
 .br
 Modified from the original in a manner not endorsed by simplemaps.com.
+.SH SEE ALSO
+\fBpt(1)\fR

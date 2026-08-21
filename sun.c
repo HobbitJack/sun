@@ -192,6 +192,24 @@ compute_times(double lattitude, double longitude, double elevation, time_t date,
 }
 
 void
+print_table()
+{
+	if (args.astronomical_given || args.nautical_given || args.civil_given)
+		printf("Dawn\tDusk\n");
+	else
+		printf("Sunrise\tSunset\n");
+	return;
+}
+
+void
+print_table_city()
+{
+	printf("City\t");
+	print_table();
+	return;
+}
+
+void
 print_times(time_t *times)
 {
 	struct tm tm1;
@@ -219,15 +237,18 @@ print_times(time_t *times)
 		localtime_r(&times[1], &tm2);
 		strftime(b2, BUFSIZE-1, "%X", &tm2);
 	}
-	
-	printf("%s\t%s\n", b1, b2);
+
+	printf("%s\t%s\n", b1, b2);		
 	return;
 }
 
 void
 print_times_city(char *city, time_t *times)
 {
-	printf("%s: ", city);
+	if (args.table_given)
+		printf("%s\t", city);
+	else
+		printf("%s: ", city);
 	print_times(times);
 	return;
 }
@@ -278,8 +299,12 @@ main(int argc, char *argv[])
 
 	if (args.inputs_num)
 	{
+		if (args.table_given) print_table_city();
 		for (i=0; i<args.inputs_num; i++)
 		{
+			city = NULL;
+			errno = 0;
+			
 			PARSE_CITY_STR(args.inputs[i])
 			if (errno)
 			{
@@ -287,6 +312,7 @@ main(int argc, char *argv[])
 				status = 1;
 				continue;
 			}
+			errno = 0;
 				
 			TOKEN_CITY_STR(city)
 			if (errno)
@@ -295,6 +321,7 @@ main(int argc, char *argv[])
 				status = 1;
 				continue;
 			}
+			errno = 0;		
 
 			times = compute_times(lattitude, longitude, args.elevation_given ? args.elevation_arg : 0, date, sunangle);
 			print_times_city(name, times);
@@ -321,12 +348,16 @@ main(int argc, char *argv[])
 			return 1;
 		}
 
+		city = NULL;
+		errno = 0;
+
 		PARSE_CITY_STR(getenv("SUN_HOME_CITY"))
 		if (errno)
 		{
 			fprintf(stderr, "%s: %s: Not in database\n", progname, getenv("SUN_HOME_CITY"));
 			return 1;
 		}
+		errno = 0;
 				
 		TOKEN_CITY_STR(city)
 		if (errno)
@@ -334,9 +365,11 @@ main(int argc, char *argv[])
 			fprintf(stderr, "%s: %s: Could not parse\n", progname, getenv("SUN_HOME_CITY"));
 			return 1;
 		}
+		errno = 0;
 	}
 
 	times = compute_times(lattitude, longitude, args.elevation_given ? args.elevation_arg : 0, date, sunangle);
+	if (args.table_given) print_table();
 	print_times(times);
 	return 0;
 }
