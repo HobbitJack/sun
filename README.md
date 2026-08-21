@@ -2,6 +2,8 @@
 `sun` computes the sunrise and sunset times for points on Earth's surface, or for cities from a database stored as a Human-readable text file.
 The user may specify a city in a number of ways: cities may be given as arguments on the command line, given on standard input, or a default city read from the `SUN_HOME_CITY` environment variable.
 
+Output is given in the currently-set user timezone (i.e. `TZ` or `/etc/localtime`), unless the `-u` flag is given, in which case it is output in UTC.
+
 In addition to sunrise and sunset, the times of civil, nautical, and astronomical twilight can also be computed, which can be useful for planning or religious purposes.
 
 Accuracy is limited only by the un-forseeable atmospheric conditions, down to an error of about plus or minus 2 minutes.
