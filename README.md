@@ -41,8 +41,8 @@ $ make install
 ```
 
 which will install the program, the cities database, and documentation to the `/usr/local/` tree.
-In order to change installation location, the PREFIX and DATADIR variables may be set on the command line before running `make`.
-Note that the DATADIR variable must be set to the same value when running both `make` and `make install`.
+In order to change installation location, the `PREFIX` and `DATADIR` variables may be set on the command line before running `make`.
+Note that the `DATADIR` variable must be set to the same value when running both `make` and `make install`.
 
 ## DOCUMENTATION
 Documentation is provided in the form of this README, and in a `man` macro-formatted `roff` man page.
