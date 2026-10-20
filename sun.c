@@ -191,7 +191,8 @@ print_table()
 void
 print_table_city()
 {
-	printf("City\t");
+	if (!args.quiet_given)
+		printf("City\t");
 	print_table();
 	return;
 }
@@ -232,10 +233,13 @@ print_times(time_t *times)
 void
 print_times_city(char *city, time_t *times)
 {
-	if (args.table_given)
-		printf("%s\t", city);
-	else
-		printf("%s: ", city);
+	if (!args.quiet_given)
+	{
+		if (args.table_given)
+			printf("%s\t", city);
+		else
+			printf("%s: ", city);
+	}
 	print_times(times);
 	return;
 }
