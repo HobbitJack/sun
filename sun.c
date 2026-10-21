@@ -355,10 +355,10 @@ main(int argc, char *argv[])
 	}
 	else if (args.lattitude_given || args.longitude_given)
 	{
-		fprintf(stderr, "%s: Lattitude and longitude must be given together\n", progname);
+		fprintf(stderr, "%s: Lattitude and longitude must both be given\n", progname);
 		return 1;
 	}
-	else if (getenv("SUN_HOME_CITY") == NULL)
+	else if (getenv("SUN_HOME_CITY") == NULL || (!strcmp(getenv("SUN_HOME_CITY"), "")))
 	{
 		fprintf(stderr, "%s: Missing operand\n", progname);
 		return 1;
